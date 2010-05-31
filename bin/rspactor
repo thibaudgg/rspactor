@@ -6,5 +6,6 @@ RSpactor::Runner.start({
   :spork => ARGV.delete('--drb'),
   :view => ARGV.delete('--view'), # by default, rspactor didn't catch specs view
   :clear => ARGV.delete('--clear'),
+  :skip => ARGV.delete('--skip'),
   :run_in => ARGV.last
 })

@@ -27,7 +27,7 @@ module RSpactor
     def start_interactor
       @interactor = Interactor.new(self)
       message = "** Hit <enter> to skip initial spec #{"& cucumber " if cucumber?}run"
-      aborted = @interactor.wait_for_enter_key(message, 2, false)
+      aborted = options[:skip] || @interactor.wait_for_enter_key(message, 2, false)
       @interactor.start_termination_handler
       unless aborted
         run_all_specs

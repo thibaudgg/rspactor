@@ -15,8 +15,9 @@ RubyCocoa is needed (you can help to switch to ruby-fsevent, see branches)
 
 === Command Line Options
 
-* <code> --coral    </code>
-* <code> --drb      </code>
-* <code> --view     </code>
-* <code> --clear    </code>
+* <code> --coral    </code> use coral
+* <code> --drb      </code> use spork
+* <code> --view     </code> run view specs
+* <code> --clear    </code> clear before each run
+* <code> --skip     </code> skip initial test run
 * <code> --run_in   </code>
