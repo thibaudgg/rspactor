@@ -90,6 +90,12 @@ describe RSpactor::Runner do
         @runner.should_not_receive(:run_spec_command)
         setup
       end
+
+      it "should skip running all specs if --skip is used" do
+        @runner.options[:skip] = true
+        @runner.should_not_receive(:run_spec_command)
+        setup
+      end
     end
     
     it "should initialize Inspector" do
