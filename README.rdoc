@@ -67,4 +67,4 @@ Older versions authors are:
 * {Pelle Braendgaard}[http://github.com/pelle]
 * {Thibaud Guillaume-Gentil}[http://github.com/thibaudgg]
 
-Thanks to {Giovanni Cangiani}[http://github.com/multiscan] for the IO.open/FSEvent trick & {Rémy Coutable}[http://github.com/rymai] for beta testing.
+Thanks to {Giovanni Cangiani}[http://github.com/multiscan] for the IO.popen/FSEvent trick & {Rémy Coutable}[http://github.com/rymai] for beta testing.
