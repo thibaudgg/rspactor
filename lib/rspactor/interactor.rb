@@ -3,7 +3,7 @@ module RSpactor
     class << self
       
       def init_signal_traps
-        # Ctrl-/
+        # Ctrl-\
         Signal.trap('QUIT') do
           RSpactor.listener.stop
           RSpactor.runner.start(:all => true)
