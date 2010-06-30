@@ -48,7 +48,7 @@ Signal handlers are now used to interact with RSpactor:
 * Cucumber support (if really needed? {Steak}[http://github.com/cavalle/steak] works fine.)
 * Other ideas?
 
-== Development:
+== Development
 
 * Source hosted at {GitHub}[http://github.com/thibaudgg/rspactor].
 * Report issues/Questions/Feature requests on {GitHub Issues}[http://github.com/thibaudgg/rspactor/issues]
