@@ -1,195 +1,55 @@
-require 'rspactor'
+require 'growl'
 
 module RSpactor
   class Runner
-    def self.start(options = {})
-      run_in = options.delete(:run_in) || Dir.pwd
-      new(run_in, options).start
-    end
+    attr_reader :pipe
     
-    attr_reader :dir, :options, :inspector, :interactor, :spork
-    
-    def initialize(dir, options = {})
-      @dir = dir
-      @options = options
-      @spork = Spork.new(self) if options[:spork]
-      read_git_head
-    end
-    
-    def start
-      load_dotfile
-      puts "** RSpactor, now watching at '#{dir}'"
-      spork.start if spork?
-      start_interactor
-      start_listener
-    end
-    
-    def start_interactor
-      @interactor = Interactor.new(self)
-      message = "** Hit <enter> to skip initial spec #{"& cucumber " if cucumber?}run"
-      aborted = options[:skip] || @interactor.wait_for_enter_key(message, 2, false)
-      @interactor.start_termination_handler
-      unless aborted
-        run_all_specs
-        run_cucumber_command('~@wip,~@pending', false)
-      end
-    end
-    
-    def start_listener
-      @inspector = Inspector.new(self)
-      
-      Listener.new(Inspector::EXTENSIONS) do |files|
-        changed_files(files) unless git_head_changed?
-      end.run(dir)
-    end
-    
-    def load_dotfile
-      dotfile = File.join(ENV['HOME'], '.rspactor')
-      if File.exists?(dotfile)
-        begin
-          Kernel.load dotfile
-        rescue => e
-          $stderr.puts "Error while loading #{dotfile}: #{e}"
-        end
-      end
-    end
-    
-    def run_all_specs
-      run_spec_command(File.join(dir, 'spec'))
-    end
-    
-    def run_spec_command(paths)
-      paths = Array(paths)
-      if paths.empty?
-        @last_run_failed = nil
+    def start(options = {})
+      if options[:all]
+        command = rspec_command(["spec"])
+        message = "Running all specs"
       else
-        cmd = [ruby_opts, spec_runner, paths, spec_opts].flatten.join(' ')
-        @last_run_failed = run_command(cmd)
+        command = rspec_command(Inspector.spec_paths)
+        message = "Running: #{Inspector.spec_paths.join(' ') }"
       end
+      run_rspec(command, message)
     end
     
-    def run_cucumber_command(tags = '@wip:2', clear = @options[:clear])
-      return unless cucumber?
-      
-      system("clear;") if clear
-      puts "** Running all #{tags} tagged features..."
-      cmd = [ruby_opts, cucumber_runner, cucumber_opts(tags)].flatten.join(' ')
-      @last_run_failed = run_command(cmd)
+    def stop
+      Process.kill("ABRT", pipe.pid)
+      @pipe = nil
     end
     
-    def last_run_failed?
-      @last_run_failed == false
-    end
-    
-    def cucumber?
-      @cucumber ||= File.exist?(File.join(dir, 'features'))
-    end
-    
-    def spork?
-      spork != nil
-    end
-    
-  protected
-    
-    def run_command(cmd)
-      system(cmd)
-      $?.success?
-    end
-    
-    def changed_files(files)
-      files = files.inject([]) do |all, file|
-        all.concat inspector.determine_files(file)
-      end
-      unless files.empty?
-        
-        # cucumber features
-        if files.delete('cucumber')
-          run_cucumber_command
-        end
-        
-        # specs files
-        unless files.empty?
-          system("clear;") if @options[:clear]
-          files.uniq!
-          puts files.map { |f| f.to_s.gsub(/#{dir}/, '') }.join("\n")
-          
-          previous_run_failed = last_run_failed?
-          run_spec_command(files)
-          
-          if options[:retry_failed] and previous_run_failed and not last_run_failed?
-            run_all_specs
-          end
-        end
-      end
+    def run?
+      pipe && pipe.pid != nil
     end
     
   private
     
-    def spec_opts
-      if File.exist?('spec/spec.opts')
-        opts = File.read('spec/spec.opts').gsub("\n", ' ')
-      else
-        opts = "--color"
+    def run_rspec(command, message)
+      @pipe = IO.popen(command)
+      UI.info message, :reset => true, :clear => RSpactor.options[:clear]
+      while pipe && !pipe.eof?
+        if pipe && char = pipe.read(8)
+          print char
+          $stdout.flush if pipe
+        end
       end
-      opts << " --drb" if spork
-      opts << spec_formatter_opts
-      # only add the "progress" formatter unless no other (besides growl) is specified
-      opts << ' -f progress' unless opts.scan(/\s(?:-f|--format)\b/).length > 1
-      opts
+      @pipe = nil
     end
     
-    def cucumber_opts(tags)
-      opts = "--profile rspactor"
-      opts << " --drb" if spork
-      opts << " --tags #{tags}"
-      opts << cucumber_formatter_opts
-      opts << " --require features" # because using require option overwrite default require
-      opts << " features"
-      opts
+    def rspec_command(paths)
+      cmd_parts = [paths.join(' ')]
+      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../growl/growl_formatter.rb --format GrowlFormatter" if Growl.installed?
+      cmd_parts.unshift "--color"
+      cmd_parts.unshift "rspec"
+      cmd_parts.unshift "bundle exec" if bundler?
+      cmd_parts.join(" ")
     end
     
-    def spec_formatter_opts
-      " --require #{File.dirname(__FILE__)}/../rspec_growler.rb --format RSpecGrowler:STDOUT"
+    def bundler?
+      File.exist?("./Gemfile")
     end
     
-    def cucumber_formatter_opts
-      " --require #{File.dirname(__FILE__)}/../cucumber_growler.rb"
-    end
-    
-    def spec_runner
-      if File.exist?("script/spec")
-        "script/spec"
-      else
-        "spec"
-      end
-    end
-    
-    def cucumber_runner
-      if File.exist?("script/cucumber")
-        "script/cucumber"
-      else
-        "cucumber"
-      end
-    end
-    
-    def ruby_opts
-      other = ENV['RUBYOPT'] ? " #{ENV['RUBYOPT']}" : ''
-      other << ' -rcoral' if options[:coral]
-      %(RUBYOPT='-Ilib:spec#{other}')
-    end
-    
-    def git_head_changed?
-      old_git_head = @git_head
-      read_git_head
-      @git_head and old_git_head and @git_head != old_git_head
-    end
-    
-    def read_git_head
-      git_head_file = File.join(dir, '.git', 'HEAD')
-      @git_head = File.exists?(git_head_file) && File.read(git_head_file)
-    end
   end
 end
-
-# backward compatibility
-Runner = RSpactor::Runner

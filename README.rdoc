@@ -1,23 +1,70 @@
-=== Dependencies
+= RSpactor
 
-RubyCocoa is needed (you can help to switch to ruby-fsevent, see branches)
+RSpactor allows to automatically & intelligently launch your specs when your files are modified.
+Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents are supported from scratch.
 
-  Installing ruby-cocoa with rvm: http://gist.github.com/294465
+== Features
 
-=== Install
+* FSEvent support (without RubyCocoa!)
+* RSpec 2.0 support (from beta.14)
+* Bundler support
+* Super fast change detection
+* Automatic _spec.rb files detection (even new file created, unlike watchr)
+* Growl notification (please install {growlnotify}[http://growl.info/documentation/growlnotify.php])
 
-  gem install rspactor
+== Install
 
-=== Usage
+At the moment, only Mac OS X (10.5+) is supported. Tested on ruby 1.8.7 & 1.9.2dev.
 
-  cd /path/to/rails/root/
-  rspactor
+Install the gem:
 
-=== Command Line Options
+    gem install rspactor
 
-* <code> --coral    </code> use coral
-* <code> --drb      </code> use spork
-* <code> --view     </code> run view specs
-* <code> --clear    </code> clear before each run
-* <code> --skip     </code> skip initial test run
-* <code> --run_in   </code>
+If you are using Bundler, please add it to your Gemfile (inside test group):
+
+    gem 'rspactor', '>= 0.7.beta.1'
+
+== Usage
+
+Just launch RSpactor inside your ruby/rails project with:
+
+    rspactor
+
+Options list is available with:
+
+    rspactor -h
+
+Signal handlers are now used to interact with RSpactor:
+
+* Ctrl-C => Quit RSpactor or quick abort running spec(s)
+* Ctrl-/ => Running all specs
+
+== TODO
+
+* Specific files (spec_helper, factories, fixtures...) inspections
+* RSpec 1.3 support
+* Inotify support (linux)
+* Spork support (when [this issue]{http://github.com/timcharper/spork/issues#issue/37} will be resolved)
+* Cucumber support (if really needed? {Steak}[http://github.com/cavalle/steak] works fine.)
+* Other ideas?
+
+== Development:
+
+* Source hosted at {GitHub}[http://github.com/thibaudgg/rspactor].
+* Report issues/Questions/Feature requests on {GitHub Issues}[http://github.com/thibaudgg/rspactor/issues]
+
+Pull requests are very welcome! Make sure your patches are well tested. Please create a topic branch for every separate change
+you make.
+
+== Authors
+
+From version 0.7.x was completely rewritten by {Thibaud Guillaume-Gentil}[http://github.com/thibaudgg].
+
+Older versions authors are:
+
+* {Mislav Marohnić}[http://github.com/mislav]
+* {Andreas Wolff}[http://github.com/phunkwork]
+* {Pelle Braendgaard}[http://github.com/pelle]
+* {Thibaud Guillaume-Gentil}[http://github.com/thibaudgg]
+
+Thanks to {Giovanni Cangiani}[http://github.com/multiscan] for the IO.open/FSEvent trick & {Rémy Coutable}[http://github.com/rymai] for beta testing.

@@ -1,88 +1,59 @@
-require 'osx/foundation'
-OSX.require_framework '/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework'
-
 module RSpactor
-  # based on http://rails.aizatto.com/2007/11/28/taming-the-autotest-beast-with-fsevents/
   class Listener
-    attr_reader :last_check, :callback, :valid_extensions
+    EXTENSIONS = %w[rb erb builder haml yml]
     
-    def initialize(valid_extensions = nil)
-      @valid_extensions = valid_extensions
-      timestamp_checked
-      
-      @callback = lambda do |stream, ctx, num_events, paths, marks, event_ids|
-        changed_files = extract_changed_files_from_paths(split_paths(paths, num_events))
-        timestamp_checked
-        yield changed_files unless changed_files.empty?
-      end
+    attr_reader :last_event, :callback, :pipe
+    
+    def initialize
+      update_last_event
     end
     
-    def run(directories)
-      dirs = Array(directories)
-      stream = OSX::FSEventStreamCreate(OSX::KCFAllocatorDefault, callback, nil, dirs, OSX::KFSEventStreamEventIdSinceNow, 0.5, 0)
-      unless stream
-        $stderr.puts "Failed to create stream"
-        exit(1)
-      end
-      
-      OSX::FSEventStreamScheduleWithRunLoop(stream, OSX::CFRunLoopGetCurrent(), OSX::KCFRunLoopDefaultMode)
-      unless OSX::FSEventStreamStart(stream)
-        $stderr.puts "Failed to start stream"
-        exit(1)
-      end
-      
-      begin
-        OSX::CFRunLoopRun()
-      rescue Interrupt
-        OSX::FSEventStreamStop(stream)
-        OSX::FSEventStreamInvalidate(stream)
-        OSX::FSEventStreamRelease(stream)
-      end
+    def watch(&block)
+      @callback = block
     end
     
-    def timestamp_checked
-      @last_check = Time.now
+    def start
+      @pipe = IO.popen("#{bin_path}/fsevent_watch .")
+      watch_change
     end
     
-    def split_paths(paths, num_events)
-      paths.regard_as('*')
-      rpaths = []
-      num_events.times { |i| rpaths << paths[i] }
-      rpaths
+    def stop
+      Process.kill("HUP", pipe.pid) if pipe
     end
     
-    def extract_changed_files_from_paths(paths)
-      changed_files = []
-      paths.each do |path|
-        next if ignore_path?(path)
-        Dir.glob(path + "*").each do |file|
-          next if ignore_file?(file)
-          changed_files << file if file_changed?(file)
+  private
+    
+    def watch_change
+      while !pipe.eof?
+        if line = pipe.readline
+          modified_dirs = line.split(" ")
+          files = modified_files(modified_dirs)
+          update_last_event
+          callback.call(files)
         end
       end
-      changed_files
     end
     
-    def file_changed?(file)
-      File.stat(file).mtime > last_check
-    rescue Errno::ENOENT
-      false
+    def modified_files(dirs)
+      files = potentially_modified_files(dirs).select { |file| recent_file?(file) }
+      files.map! { |file| file.gsub("#{Dir.pwd}/", '') }
     end
     
-    def ignore_path?(path)
-      path =~ /(?:^|\/)\.(git|svn)/
+    def potentially_modified_files(dirs)
+      Dir.glob(dirs.map { |dir| "#{dir}*.{#{EXTENSIONS.join(',')}}" })
     end
     
-    def ignore_file?(file)
-      File.basename(file).index('.') == 0 or not valid_extension?(file)
+    def recent_file?(file)
+      File.mtime(file) >= last_event
     end
     
-    def file_extension(file)
-      file =~ /\.(\w+)$/ and $1
+    def update_last_event
+      @last_event = Time.now
     end
     
-    def valid_extension?(file)
-      valid_extensions.nil? or valid_extensions.include?(file_extension(file))
+    def bin_path
+      File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'bin'))
     end
+    
   end
 end

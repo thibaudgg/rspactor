@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
-require 'rspactor/runner'
+require 'trollop'
+require 'rspactor'
+require 'rspactor/version'
 
-RSpactor::Runner.start({
-  :coral => ARGV.delete('--coral'),
-  :spork => ARGV.delete('--drb'),
-  :view => ARGV.delete('--view'), # by default, rspactor didn't catch specs view
-  :clear => ARGV.delete('--clear'),
-  :skip => ARGV.delete('--skip'),
-  :run_in => ARGV.last
-})
+options = Trollop::options do
+  version RSpactor::VERSION
+  
+  opt :clear, "Clear the console beetween each spec(s) run"
+end
+
+RSpactor.start(options)
