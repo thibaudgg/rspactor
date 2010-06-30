@@ -18,7 +18,7 @@ At the moment, only Mac OS X (10.5+) is supported. Tested on ruby 1.8.7 & 1.9.2d
 
 Install the gem:
 
-    gem install rspactor
+    gem install rspactor --pre
 
 If you are using Bundler, please add it to your Gemfile (inside test group):
 
