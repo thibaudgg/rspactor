@@ -1,6 +1,7 @@
 require 'rspec/core/formatters/base_formatter'
+require 'libnotify'
 
-class NotifyFormatter < RSpec::Core::Formatters::ProgressFormatter
+class LibnotifyFormatter < RSpec::Core::Formatters::ProgressFormatter
   
   def dump_summary
     super
@@ -21,7 +22,7 @@ class NotifyFormatter < RSpec::Core::Formatters::ProgressFormatter
     end
     message << "\nin #{format_seconds(duration)} seconds"
     
-    system("notify-send -i #{image_path(icon)} 'RSpec results' '#{message}'")
+    Libnotify.show :body => message, :summary => "RSpec results", :icon_path => image_path(icon)
   end
   
 private
