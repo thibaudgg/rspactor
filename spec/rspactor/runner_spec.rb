@@ -3,6 +3,7 @@ require 'spec_helper'
 describe RSpactor::Runner do
   before(:each) do
     subject.stub(:growl_installed?).and_return(false)
+    subject.stub(:notify_installed?).and_return(false)
     RSpactor.stub(:options).and_return({})
   end
   subject { described_class.new }

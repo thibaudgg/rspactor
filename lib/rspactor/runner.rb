@@ -39,6 +39,7 @@ module RSpactor
     def rspec_command(paths)
       cmd_parts = [paths.join(' ')]
       cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../growl/growl_formatter.rb --format GrowlFormatter" if growl_installed?
+      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../notify/notify_formatter.rb --format NotifyFormatter" if notify_installed?
       cmd_parts.unshift "--color"
       cmd_parts.unshift "rspec"
       cmd_parts.unshift "bundle exec" if bundler?
@@ -51,6 +52,10 @@ module RSpactor
     
     def growl_installed?
       system 'which growlnotify > /dev/null 2>&1'
+    end
+    
+    def notify_installed?
+      system 'which notify-send > /dev/null 2>&1'
     end
     
   end
