@@ -1,3 +1,5 @@
+require 'sys/uname'
+
 module RSpactor
   class Listener
     EXTENSIONS = %w[rb erb builder haml yml]
