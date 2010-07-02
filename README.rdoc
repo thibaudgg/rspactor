@@ -46,6 +46,7 @@ Signal handlers are now used to interact with RSpactor:
 * Inotify support (linux)
 * Spork support (when {this issue}[http://github.com/timcharper/spork/issues#issue/37] will be resolved)
 * Cucumber support (if really needed? {Steak}[http://github.com/cavalle/steak] works fine)
+* .rspec options file support
 * Other ideas?
 
 == Development
