@@ -15,13 +15,13 @@ module RSpactor
     end
     
     def start
-      case Sys::Uname.sysname
-      when 'Darwin' then
-        @pipe = IO.popen("#{bin_path}/fsevent_watch .")
-      when 'Linux' then
-        @pipe = IO.popen("#{bin_path}/inotify_watch .")
+      @pipe = case Sys::Uname.sysname
+      when 'Darwin'
+        IO.popen("#{bin_path}/fsevent_watch .")
+      when 'Linux'
+        IO.popen("#{bin_path}/inotify_watch .")
       end
-
+      
       watch_change
     end
     
