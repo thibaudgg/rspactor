@@ -11,9 +11,11 @@ module RSpactor
         end
         # Ctrl-C
         Signal.trap('INT') do
+          RSpactor.listener.stop
           if RSpactor.runner.run?
             UI.info "RSpec run canceled", :reset => true, :clear => RSpactor.options[:clear]
             RSpactor.runner.stop
+            RSpactor.listener.start
           else
             UI.info "Bye bye...", :reset => true
             abort("\n")
