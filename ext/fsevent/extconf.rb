@@ -1,4 +1,6 @@
 # Workaround to make Rubygems believe it builds a native gem
+require 'rubygems'
+require 'sys/uname'
 
 def emulate_extension_install(extension_name)
   File.open('Makefile', 'w') { |f| f.write "all:\n\ninstall:\n\n" }
@@ -11,18 +13,19 @@ def emulate_extension_install(extension_name)
   File.open('nmake.bat', 'w') { |f| }
 end
 
-emulate_extension_install('fsevent')
-
-# Compile the actual fsevent_watch binary
-
-raise "Only Darwin (Mac OS X) systems are supported for the moment" unless `uname -s`.chomp == 'Darwin'
-
-GEM_ROOT       = File.expand_path(File.join('..', '..'))
-DARWIN_VERSION = `uname -r`.to_i
-SDK_VERSION    = { 9 => '10.5', 10 => '10.6', 11 => '10.7' }[DARWIN_VERSION]
-
-raise "Darwin #{DARWIN_VERSION} is not supported" unless SDK_VERSION
-
-`CFLAGS='-isysroot /Developer/SDKs/MacOSX#{SDK_VERSION}.sdk -mmacosx-version-min=#{SDK_VERSION}' /usr/bin/gcc -framework CoreServices -o "#{GEM_ROOT}/bin/fsevent_watch" fsevent_watch.c`
-
-raise "Compilation of fsevent_watch failed (see README)" unless File.executable?("#{GEM_ROOT}/bin/fsevent_watch")
+if Sys::Uname.sysname == 'Darwin'
+  emulate_extension_install('fsevent')
+  
+  gem_root      = File.expand_path(File.join('..', '..'))
+  darwin_verion = Sys::Uname.release.to_i
+  sdk_verion    = { 9 => '10.5', 10 => '10.6', 11 => '10.7' }[darwin_verion]
+  
+  raise "Darwin #{darwin_verion} is not supported" unless sdk_verion
+  
+  # Compile the actual fsevent_watch binary
+  system("CFLAGS='-isysroot /Developer/SDKs/MacOSX#{sdk_verion}.sdk -mmacosx-version-min=#{sdk_verion}' /usr/bin/gcc -framework CoreServices -o '#{gem_root}/bin/fsevent_watch' fsevent_watch.c")
+  
+  unless File.executable?("#{gem_root}/bin/fsevent_watch")
+    raise "Compilation of fsevent_watch failed (see README)"
+  end
+end
