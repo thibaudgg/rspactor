@@ -6,5 +6,5 @@ gem 'growl',     '>= 1.0.3'
 gem 'libnotify', '>= 0.1.3'
 
 group :test do
-  gem 'rspec', '>= 2.0.0.beta.15'
+  gem 'rspec', '>= 2.0.0.beta.17'
 end
