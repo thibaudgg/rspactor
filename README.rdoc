@@ -39,7 +39,7 @@ Options list is available with:
 Signal handlers are now used to interact with RSpactor:
 
 - Ctrl-C - Quit RSpactor or quick abort running spec(s)
-- Ctrl-\ - Running all specs
+- Ctrl-\  - Running all specs
 
 == TODO
 
