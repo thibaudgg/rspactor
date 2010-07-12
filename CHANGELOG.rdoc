@@ -1,0 +1,11 @@
+== 0.7.0.beta.2 (July 12, 2010)
+
+Features:
+
+* Linux support with inotify (Yann Lugrin)
+
+== 0.7.0.beta.1 (June 29, 2010)
+
+Features:
+
+* Initial rewrite with only RSpec 2 support
