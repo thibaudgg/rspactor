@@ -2,10 +2,11 @@
 
 Features:
 
-* Linux support with inotify (Yann Lugrin)
+- Linux support with inotify (Yann Lugrin)
+- Libnotify suport on Linux (Yann Lugrin)
 
 == 0.7.0.beta.1 (June 29, 2010)
 
 Features:
 
-* Initial rewrite with only RSpec 2 support
+- Initial rewrite with only RSpec 2 support
