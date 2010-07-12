@@ -1,6 +1,10 @@
 module RSpactor
   class Runner
-    attr_reader :pipe
+    attr_reader :pipe, :rspec_version
+    
+    def initialize
+      @rspec_version = determine_rspec_version
+    end
     
     def start(options = {})
       if options[:all]
@@ -37,17 +41,30 @@ module RSpactor
     end
     
     def rspec_command(paths)
-      cmd_parts = [paths.join(' ')]
-      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../formatters/rspec2/growl_formatter.rb --format GrowlFormatter" if growl_installed?
-      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../formatters/rspec2/libnotify_formatter.rb --format LibnotifyFormatter" if notify_installed?
-      cmd_parts.unshift "--color"
-      cmd_parts.unshift "rspec"
+      cmd_parts = []
+      cmd_parts << (rspec_version == 1 ? "spec" : "rspec")
+      cmd_parts << "--color"
+      cmd_parts << "--require #{File.dirname(__FILE__)}/../formatters/rspec2/growl_formatter.rb --format GrowlFormatter" if growl_installed?
+      cmd_parts << "--require #{File.dirname(__FILE__)}/../formatters/rspec2/libnotify_formatter.rb --format LibnotifyFormatter" if notify_installed?
+      cmd_parts << paths.join(' ')
       cmd_parts.unshift "bundle exec" if bundler?
       cmd_parts.join(" ")
     end
     
     def bundler?
-      File.exist?("./Gemfile")
+      File.exist?("#{Dir.pwd}/Gemfile")
+    end
+    
+    def determine_rspec_version
+      if bundler?
+        # Allow RSpactor to be tested with RSpactor (bundle show inside a bundle exec)
+        ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"
+        `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
+      elsif File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
+        File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
+      else
+        2
+      end
     end
     
     def growl_installed?
