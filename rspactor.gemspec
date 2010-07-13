@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.add_bundler_dependencies
   
   s.files        = Dir.glob("{bin,images,lib,ext}/**/*") + %w[LICENSE README.rdoc]
-  s.extensions   = ["ext/fsevent/extconf.rb"]
+  s.extensions   = ["ext/extconf.rb"]
   s.executable   = 'rspactor'
   s.require_path = 'lib'
 end

@@ -11,7 +11,7 @@ void callback(ConstFSEventStreamRef streamRef,
   int i;
   char **paths = eventPaths;
   for (i = 0; i < numEvents; i++) {
-    printf(paths[i]);
+    printf("%s", paths[i]);
     printf(" ");
   }
   printf("\n");

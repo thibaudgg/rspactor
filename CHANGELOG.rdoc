@@ -1,5 +1,11 @@
 == 0.7.0.beta.2 (July 12, 2010)
 
+Bugfixes:
+
+- gem build on linux
+
+== 0.7.0.beta.2 (July 12, 2010)
+
 Features:
 
 - Linux support with inotify (Yann Lugrin)
