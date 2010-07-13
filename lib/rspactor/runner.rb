@@ -38,8 +38,7 @@ module RSpactor
     
     def rspec_command(paths)
       cmd_parts = [paths.join(' ')]
-      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../formatters/rspec2/growl_formatter.rb --format GrowlFormatter" if growl_installed?
-      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../formatters/rspec2/libnotify_formatter.rb --format LibnotifyFormatter" if notify_installed?
+      cmd_parts.unshift "--require #{File.dirname(__FILE__)}/../formatters/rspec2_formatter.rb --format RSpec2Formatter" if growl_installed? || notify_installed?
       cmd_parts.unshift "--color"
       cmd_parts.unshift "rspec"
       cmd_parts.unshift "bundle exec" if bundler?
