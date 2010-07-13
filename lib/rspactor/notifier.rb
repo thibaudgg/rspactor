@@ -1,10 +1,6 @@
 require 'sys/uname'
-case Sys::Uname.sysname
-when 'Darwin'
-  require 'growl'
-when 'Linux'
-  require 'libnotify'
-end 
+require 'growl'
+require 'libnotify'
 
 module RSpactor
   module Notifier

@@ -18,7 +18,7 @@ module RSpactor
         Inspector.determine_spec_paths(files)
         runner.start if Inspector.spec_paths?
       end
-      UI.info "RSpactor is now watching at '#{Dir.pwd}'"
+      UI.info "RSpactor is now watching at '#{Dir.pwd}' using RSpec #{runner.rspec_version}.x"
       listener.start
     end
     
