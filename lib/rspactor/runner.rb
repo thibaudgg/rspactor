@@ -3,7 +3,7 @@ module RSpactor
     attr_reader :pipe, :rspec_version
     
     def initialize
-      @rspec_version = determine_rspec_version
+      @rspec_version = RSpactor.options[:rspec_version] || determine_rspec_version
     end
     
     def start(options = {})
@@ -29,22 +29,35 @@ module RSpactor
   private
     
     def run_rspec(command, message)
-      @pipe = IO.popen(command)
       UI.info message, :reset => true, :clear => RSpactor.options[:clear]
-      while pipe && !pipe.eof?
-        if pipe && char = pipe.read(8)
-          print char
-          $stdout.flush if pipe
+      case rspec_version
+      when 1
+        # problem with color if launched via popen
+        system(command)
+      when 2
+        @pipe = IO.popen(command)
+        while pipe && !pipe.eof?
+          if pipe && char = pipe.read(32)
+            print char
+            $stdout.flush if pipe
+          end
         end
+        @pipe = nil
       end
-      @pipe = nil
     end
     
     def rspec_command(paths)
       cmd_parts = []
       cmd_parts << (rspec_version == 1 ? "spec" : "rspec")
       cmd_parts << "--color"
-      cmd_parts << "--require #{File.dirname(__FILE__)}/../formatters/rspec#{rspec_version}_formatter.rb --format RSpec#{rspec_version}Formatter" if growl_installed? || notify_installed?
+      if growl_installed? || notify_installed?
+        case rspec_version
+        when 1
+          cmd_parts << "-f progress --require #{File.dirname(__FILE__)}/../formatters/rspec_one_formatter.rb --format RSpecOneFormatter:STDOUT"
+        when 2
+          cmd_parts << "--require #{File.dirname(__FILE__)}/../formatters/rspec_two_formatter.rb --format RSpecTwoFormatter"
+        end
+      end
       cmd_parts << paths.join(' ')
       cmd_parts.unshift "bundle exec" if bundler?
       cmd_parts.join(" ")
@@ -55,6 +68,7 @@ module RSpactor
     end
     
     def determine_rspec_version
+      UI.info "Determine rspec_version... (can be forced with -r <i> option)"
       if bundler?
         # Allow RSpactor to be tested with RSpactor (bundle show inside a bundle exec)
         ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"

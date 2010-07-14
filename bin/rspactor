@@ -7,6 +7,9 @@ options = Trollop::options do
   version RSpactor::VERSION
   
   opt :clear, "Clear the console beetween each spec(s) run"
+  opt :rspec_version, "Force RSpec Version (1 or 2), normally it should be automatically detected", :type => :int
 end
+
+Trollop::die :rspec_version, "not supported" unless [nil, 1, 2].include?(options[:rspec_version])
 
 RSpactor.start(options)

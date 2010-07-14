@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-
 require 'rubygems'
 require 'rb-inotify'
 
@@ -15,13 +14,12 @@ end
 
 while true do
   notifier.process
-
+  
   if !folders.empty?
     $stdout.puts folders.join(' ')
     $stdout.flush
     folders.clear
   end
-
+  
   sleep(0.5)
 end
-

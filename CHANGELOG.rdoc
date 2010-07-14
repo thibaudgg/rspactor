@@ -1,4 +1,14 @@
-== 0.7.0.beta.2 (July 12, 2010)
+== 0.7.0.beta.4 (July 14, 2010)
+
+Features:
+
+- RSpec 1.x support is back
+
+Bugfixes:
+
+- Forcing stop on rspec 2 runs works as excepted
+
+== 0.7.0.beta.3 (July 12, 2010)
 
 Bugfixes:
 

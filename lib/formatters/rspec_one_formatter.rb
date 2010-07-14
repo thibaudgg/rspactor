@@ -1,8 +1,8 @@
 require 'spec/runner/formatter/base_formatter'
-require 'formatters/rspec_formatter'
-require 'rspactor/notifier'
+require "#{File.dirname(__FILE__)}/rspec_formatter"
+require "#{File.dirname(__FILE__)}/../rspactor/notifier"
 
-class RSpec1Fromatter < Spec::Runner::Formatter::BaseFormatter
+class RSpecOneFormatter < Spec::Runner::Formatter::BaseFormatter
   include RSpecFormatter
   
   def dump_summary(duration, total, failures, pending)

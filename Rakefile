@@ -48,7 +48,3 @@ end
 
 task :package => :gemspec
 task :default => :spec
-
-task :try do
-  RSpactor.start
-end

@@ -39,7 +39,13 @@ describe RSpactor::Runner do
     before(:each) { Dir.stub(:pwd).and_return(@pwd + '/spec/fixtures/bundler_rspec1') }
     
     it "should get rspec 1 version from Gemfile" do
-      IO.should_receive(:popen).with("bundle exec spec --color spec")
+      runner.should_receive(:system).with("bundle exec spec --color spec")
+      runner.start(:all => true)
+    end
+    
+    it "should force rspec 2 version from options" do
+      runner = init_runner(:rspec_version => 2)
+      IO.should_receive(:popen).with("bundle exec rspec --color spec")
       runner.start(:all => true)
     end
   end
@@ -57,7 +63,7 @@ describe RSpactor::Runner do
     before(:each) { Dir.stub(:pwd).and_return(@pwd + '/spec/fixtures/helper_rspec1') }
     
     it "should get rspec 1 version from spec_helper" do
-      IO.should_receive(:popen).with("spec --color spec")
+      runner.should_receive(:system).with("spec --color spec")
       runner.start(:all => true)
     end
   end
@@ -73,11 +79,11 @@ describe RSpactor::Runner do
 
 protected
   
-  def init_runner
+  def init_runner(rspactor_options = {})
+    RSpactor.stub(:options).and_return(rspactor_options)
     runner = described_class.new
     runner.stub(:growl_installed?).and_return(false)
     runner.stub(:notify_installed?).and_return(false)
-    RSpactor.stub(:options).and_return({})
     runner
   end
   

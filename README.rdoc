@@ -1,13 +1,13 @@
 = RSpactor
 
 RSpactor allows to automatically & intelligently launch your specs when your files are modified.
-Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents are supported from scratch.
+Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents & Inotify are supported from scratch.
 
 == Features
 
 - FSEvent support on Mac OS X (without RubyCocoa!)
 - Inotify support on Linux
-- RSpec 2.0 support (from beta.14)
+- RSpec 1.x & 2.x (from beta.14) support
 - Bundler support
 - Super fast change detection
 - Automatic _spec.rb files detection (even new file created, unlike watchr)
@@ -16,7 +16,7 @@ Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents are s
 
 == Install
 
-At the moment, only Mac OS X (10.5+) & Linux are supported. Tested on ruby 1.8.7 & 1.9.2dev.
+Only Mac OS X (10.5+) & Linux are supported. Tested on Ruby 1.8.7 & 1.9.2dev.
 
 Install the gem:
 
@@ -39,11 +39,10 @@ Options list is available with:
 Signal handlers are now used to interact with RSpactor:
 
 - Ctrl-C - Quit RSpactor or quick abort running spec(s)
-- Ctrl-\  - Running all specs
+- Ctrl-\ - Running all specs
 
 == TODO
 
-- RSpec 1.3 support
 - Specific files (spec_helper, factories, fixtures...) inspections
 - Spork support (when {this issue}[http://github.com/timcharper/spork/issues#issue/37] will be resolved)
 - {LiveReload}[http://github.com/mockko/livereload] support
