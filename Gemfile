@@ -10,5 +10,5 @@ gem 'libnotify', '>= 0.1.3'
 
 group :test do
   gem 'bundler'
-  gem 'rspec', '>= 2.0.0.beta.17'
+  gem 'rspec', '>= 2.0.0.beta.18'
 end
