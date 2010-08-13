@@ -1,3 +1,3 @@
 module RSpactor
-  VERSION = "0.7.0.beta.5"
+  VERSION = "0.7.0.beta.6"
 end
