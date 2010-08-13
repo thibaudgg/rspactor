@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "rspactor"
   
   s.add_development_dependency  'bundler', '>= 1.0.0.rc.5'
-  s.add_development_dependency  'rspec',   '>= 2.0.0.beta.17'
+  s.add_development_dependency  'rspec',   '>= 2.0.0.beta.19'
   
   s.add_dependency 'bundler',   '>= 1.0.0.rc.5'
   s.add_dependency 'trollop',   '>= 1.16.2'

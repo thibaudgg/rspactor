@@ -7,7 +7,7 @@ Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents & Ino
 
 - FSEvent support on Mac OS X (without RubyCocoa!)
 - Inotify support on Linux
-- RSpec 1.x & 2.x (from beta.14) support
+- RSpec 1.x & 2.x (from beta.18) support
 - Bundler support
 - Super fast change detection
 - Automatic _spec.rb files detection (even new file created, unlike watchr)
