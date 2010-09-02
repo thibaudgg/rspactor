@@ -19,7 +19,7 @@ module RSpactor
         runner.start if Inspector.spec_paths?
       end
       UI.info "RSpactor is now watching at '#{Dir.pwd}' using RSpec #{runner.rspec_version}.x"
-      listener.start
+      listener.start(@options[:event] || "modify")
     end
     
   end

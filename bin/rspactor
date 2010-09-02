@@ -8,6 +8,7 @@ options = Trollop::options do
   
   opt :clear, "Clear the console beetween each spec(s) run"
   opt :rspec_version, "Force RSpec Version (1 or 2), normally it should be automatically detected", :type => :int
+  opt :event, "specify inotify event", :type => String
 end
 
 Trollop::die :rspec_version, "not supported" unless [nil, 1, 2].include?(options[:rspec_version])
