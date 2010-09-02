@@ -12,7 +12,7 @@ Version 0.7.x is a complete rewrite, RubyCocoa is no more needed, FSEvents & Ino
 - Super fast change detection
 - Automatic _spec.rb files detection (even new file created, unlike watchr)
 - Growl notification (please install {growlnotify}[http://growl.info/documentation/growlnotify.php])
-- Libnotify notification
+- Libnotify notification (with custom event support)
 
 == Install
 
