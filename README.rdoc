@@ -41,6 +41,12 @@ Signal handlers are now used to interact with RSpactor:
 - Ctrl-C - Quit RSpactor or quick abort running spec(s)
 - Ctrl-\ - Running all specs
 
+== Vim
+
+Vim does not actually modify the file so you will need to specify the following event in nix
+
+    rspactor -e close_write
+
 == TODO
 
 - Specific files (spec_helper, factories, fixtures...) inspections

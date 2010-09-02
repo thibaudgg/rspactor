@@ -5,7 +5,7 @@ require 'rb-inotify'
 folders = Array.new
 notifier = INotify::Notifier.new
 
-notifier.watch(ARGV.first || '.', :modify, :recursive) do |event|
+notifier.watch(ARGV[0], ARGV[1].to_sym, :recursive) do |event|
   dir = File.expand_path(File.dirname(event.absolute_name)) + '/'
   if !folders.include?(dir)
     folders << dir
