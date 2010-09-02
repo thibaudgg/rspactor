@@ -14,7 +14,7 @@ module RSpactor
       @callback = block
     end
     
-    def start(event)
+    def start(event = nil)
       @pipe = case Sys::Uname.sysname
       when 'Darwin'
         IO.popen("#{bin_path}/fsevent_watch .")
