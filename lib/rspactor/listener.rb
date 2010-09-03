@@ -14,12 +14,12 @@ module RSpactor
       @callback = block
     end
     
-    def start(event = "modify")
+    def start
       @pipe = case Sys::Uname.sysname
       when 'Darwin'
         IO.popen("#{bin_path}/fsevent_watch .")
       when 'Linux'
-        IO.popen("#{bin_path}/inotify_watch . #{event}")
+        IO.popen("#{bin_path}/inotify_watch . #{RSpactor.options[:event]}")
       end
       
       watch_change
