@@ -1,3 +1,9 @@
+== 0.7.0.beta.7 (Sep 2, 2010)
+
+Features:
+
+- Added event option for vim support via libnotify (Rufus Post)
+
 == 0.7.0.beta.6 (Aug 13, 2010)
 
 Features:
